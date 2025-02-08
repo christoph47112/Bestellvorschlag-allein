@@ -28,6 +28,7 @@ def berechne_bestellvorschlag(bestand_df, abverkauf_df, artikelnummern, sicherhe
     return pd.DataFrame(bestellvorschläge, columns=['Artikelnummer', 'Artikelname', 'Gesamtverbrauch', 'Aktueller Bestand', 'Bestellvorschlag'])
 
 st.title("Bestellvorschlag Berechnung")
+wochenordersatz_file = st.file_uploader("Wochenordersatz hochladen (PDF)", type=["pdf"])
 abverkauf_file = st.file_uploader("Abverkaufsdaten hochladen (Excel)", type=["xlsx"])
 bestand_file = st.file_uploader("Bestände hochladen (Excel)", type=["xlsx"])
 
