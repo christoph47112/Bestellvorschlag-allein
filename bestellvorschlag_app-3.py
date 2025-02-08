@@ -37,6 +37,15 @@ sicherheitsfaktor = st.slider("Sicherheitsfaktor", min_value=0.0, max_value=1.0,
 if abverkauf_file and bestand_file:
     abverkauf_df = pd.read_excel(abverkauf_file)
     bestand_df = pd.read_excel(bestand_file)
+    
+    artikel_filter = st.sidebar.text_input("Nach Artikel filtern (optional)")
+    artikel_name_filter = st.sidebar.text_input("Nach Artikelname filtern (optional)")
+    
+    if artikel_filter:
+        abverkauf_df = abverkauf_df[abverkauf_df['Artikelnummer'].astype(str).str.contains(artikel_filter, case=False, na=False)]
+    if artikel_name_filter:
+        abverkauf_df = abverkauf_df[abverkauf_df['Artikelname'].str.contains(artikel_name_filter, case=False, na=False)]
+    
     artikelnummern = bestand_df['Artikelnummer'].unique()
     result_df = berechne_bestellvorschlag(bestand_df, abverkauf_df, artikelnummern, sicherheitsfaktor)
     st.subheader("Bestellvorschläge")
