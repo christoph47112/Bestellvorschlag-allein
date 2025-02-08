@@ -21,7 +21,9 @@ def berechne_bestellvorschlag(bestand_df, abverkauf_df, artikelnummern, sicherhe
         bestand = bestand_df.loc[bestand_df['Artikelnummer'] == artikelnummer, 'Bestand Vortag in Stück (ST)'].values[0]
         gesamtverbrauch = find_best_week_consumption(artikelnummer, abverkauf_df)
         artikelname_values = abverkauf_df.loc[abverkauf_df['Artikelnummer'] == artikelnummer, 'Artikelname'].values
-        artikelname = artikelname_values[0] if len(artikelname_values) > 0 else "Unbekannt"
+        artikelname = artikelname_values[0] if len(artikelname_values) > 0 and artikelname_values[0] != "Unbekannt" else None
+        if artikelname is None:
+            continue
         bestellvorschlag = max(gesamtverbrauch * (1 + sicherheitsfaktor) - bestand, 0)
         bestellvorschläge.append((int(artikelnummer), artikelname, gesamtverbrauch, bestand, bestellvorschlag))
 
@@ -34,11 +36,13 @@ bestand_file = st.file_uploader("Bestände hochladen (Excel)", type=["xlsx"])
 
 sicherheitsfaktor = st.slider("Sicherheitsfaktor", min_value=0.0, max_value=1.0, value=0.1, step=0.05)
 
+st.sidebar.title("Artikel filtern")
+
 if abverkauf_file and bestand_file:
     abverkauf_df = pd.read_excel(abverkauf_file)
     bestand_df = pd.read_excel(bestand_file)
     
-    artikel_filter = st.sidebar.text_input("Nach Artikel filtern (optional)")
+    artikel_filter = st.sidebar.text_input("Nach Artikelnummer filtern (optional)")
     artikel_name_filter = st.sidebar.text_input("Nach Artikelname filtern (optional)")
     
     if artikel_filter:
@@ -54,3 +58,7 @@ if abverkauf_file and bestand_file:
     result_df.to_excel(output, index=False, engine='openpyxl')
     output.seek(0)
     st.download_button(label="Download der Ergebnisse", data=output, file_name="bestellvorschlag.xlsx")
+
+st.markdown("---")
+st.markdown("⚠️ **Hinweis:** Diese Anwendung speichert keine Daten und hat keinen Zugriff auf Ihre Dateien.")
+st.markdown("🌟 **Erstellt von Christoph R. Kaiser mit Hilfe von Künstlicher Intelligenz.**")
